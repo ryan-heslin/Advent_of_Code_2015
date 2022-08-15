@@ -8,7 +8,6 @@ counts = Counter(raw_input)
 part1 = counts["("] - counts[")"] 
 print(f"Part 1 : {part1}")
 
-floor = 1
 
 def first_basement(instructions): 
 
