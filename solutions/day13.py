@@ -66,9 +66,6 @@ perms = permutations(range(V))
 
 
 
-
-
-
 def solve(permutations, V):
     sequence = range(V - 1)
     best = -np.inf

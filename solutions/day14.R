@@ -1,12 +1,14 @@
 raw_input <- readLines("inputs/day14.txt")
-parsed <- gsub("^([A-z][a-z]+)[^0-9]+(\\d+)[^0-9]+(\\d+)[^0-9]+(\\d+).*$", "\\1 \\2 \\3 \\4", raw_input) |>
+parsed <- gsub(
+    "^([A-z][a-z]+)[^0-9]+(\\d+)[^0-9]+(\\d+)[^0-9]+(\\d+).*$",
+    "\\1 \\2 \\3 \\4", raw_input
+) |>
     strsplit(split = " ") |>
     do.call(what = rbind) |>
     as.data.frame() |>
     setNames(c("reindeer", "speed", "flight_time", "rest_time"))
 
 total_time <- 2503
-# parsed <- data.frame(reinderr = c("Comet", "Dancer"), speed = c(14, 16), flight_time = c(10, 11), rest_time = c(127, 162))
 
 parsed[, -1] <- lapply(parsed[, -1], as.integer)
 
@@ -20,6 +22,7 @@ parsed <- within(parsed, {
 })
 
 part1 <- max(parsed[["distance"]])
+print(part1)
 
 parsed <- within(parsed, {
     score <- 0
@@ -34,16 +37,16 @@ for (i in seq_len(total_time)) {
     flying <- parsed[["state"]] == 1
     parsed[["distance"]][flying] <- parsed[["distance"]][flying] + parsed[["speed"]][flying]
 
-
     # Switch reindeer transitioning between states
     switching <- parsed[["time_remaining"]] == 0
     parsed[["state"]][switching] <- (parsed[["state"]][switching] + 1) %% 2
 
-
     # Reset time after switching state
-    parsed[["time_remaining"]][switching] <- ifelse(parsed[["state"]][switching] == 0, parsed[["rest_time"]][switching],
-        parsed[["flight_time"]][switching]
-    )
+    parsed[["time_remaining"]][switching] <-
+        ifelse(parsed[["state"]][switching] == 0,
+            parsed[["rest_time"]][switching],
+            parsed[["flight_time"]][switching]
+        )
 
     # Find leader and award point
     leaders <- which(parsed[["distance"]] == max(parsed[["distance"]]))
