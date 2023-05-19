@@ -1,10 +1,35 @@
+simulate <- function(x, part2 = FALSE) {
+    # Get and sum stats for each item
+    results <- sapply(names(x), \(y){
+        as.matrix(overall[[y]][x[[y]], -1])
+    }) |>
+        rowSums() |>
+        setNames(col_names[-1])
+    this_player <- c(hitpoints = 100, results[stats])
+    this_cost <- results[["cost"]]
+    player_rounds <- ceiling(boss[["hitpoints"]] / max(this_player[["damage"]] - boss[["armor"]], 1))
+    boss_rounds <- ceiling(this_player[["hitpoints"]] / max(boss[["damage"]] - this_player[["armor"]], 1))
+    if (!part2) {
+        if (player_rounds <= boss_rounds) {
+            this_cost
+        } else {
+            Inf
+        }
+    } else {
+        if (boss_rounds < player_rounds) {
+            this_cost
+        } else {
+            -Inf
+        }
+    }
+}
 # Read boss stats into vector
 raw_input <- read.table("inputs/day21.txt", sep = ":")
 boss <- raw_input[, 2]
 names(boss) <- tolower(sub("\\s", "", raw_input[, 1]))
 
 # Split shop into weapon, armor, ring tables
-player <- c(hitpoints = 100, armor = NA_real_, damage = NA_real_)
+player <- c(hitpoints = 100, armor = NA_integer_, damage = NA_integer_)
 lowest_cost <- Inf
 
 shop <- "Weapons:    Cost  Damage  Armor
@@ -31,7 +56,7 @@ Defense +3   80     0       3"
 
 shop_data <- strsplit(shop, "\\n") |>
     unlist() |>
-    gsub(pattern = "(\\s\\+)", replacement = "+") |>
+    gsub(pattern = "\\s\\+", replacement = "+") |>
     strsplit("\\s+")
 
 shop_data[lengths(shop_data) < 1] <- NULL
@@ -85,34 +110,10 @@ combinations <- sapply(overall, nrow) |>
     do.call(what = expand.grid) |>
     asplit(MARGIN = 1)
 
-simulate <- function(x, part2 = FALSE) {
-    # Get and sum stats for each item
-    results <- sapply(names(x), \(y){
-        as.matrix(overall[[y]][x[[y]], -1])
-    }) |>
-        rowSums() |>
-        setNames(col_names[-1])
-    this_player <- c(hitpoints = 100, results[stats])
-    this_cost <- results[["cost"]]
-    player_rounds <- ceiling(boss[["hitpoints"]] / max(this_player[["damage"]] - boss[["armor"]], 1))
-    boss_rounds <- ceiling(this_player[["hitpoints"]] / max(boss[["damage"]] - this_player[["armor"]], 1))
-    if (!part2) {
-        if (player_rounds <= boss_rounds) {
-            this_cost
-        } else {
-            Inf
-        }
-    } else {
-        if (boss_rounds < player_rounds) {
-            this_cost
-        } else {
-            -Inf
-        }
-    }
-}
 
-part1 <- min(sapply(combinations, simulate, part2 = FALSE))
+
+part1 <- min(vapply(combinations, simulate, part2 = FALSE, FUN.VALUE = numeric(1)))
 print(part1)
 
-part2 <- max(sapply(combinations, simulate, part2 = TRUE))
+part2 <- max(vapply(combinations, simulate, part2 = TRUE, FUN.VALUE = numeric(1)))
 print(part2)

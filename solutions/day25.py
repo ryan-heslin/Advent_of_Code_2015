@@ -11,14 +11,13 @@ row = column = diagonal_length = 1
 while row != target_row or column != target_column:
     number *= 252533
     number %= 33554393
-    if row == 1: 
+    if row == 1:
         row = diagonal_length + 1
         diagonal_length += 1
         column = 1
-    else: 
+    else:
         row -= 1
         column += 1
-    #print(row, column, number )
 
-part1 = number 
+part1 = number
 print(part1)

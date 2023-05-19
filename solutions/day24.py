@@ -2,16 +2,13 @@ from itertools import combinations
 from math import inf
 from math import prod
 
-## numbers = parsed input
-empty = set()
-
 
 def find_best(numbers):
 
     best_prod = -1
     start_length = 1
     while best_prod < 0:
-        starts = [set(x) for x in combinations(numbers, r=start_length)]
+        starts = list(map(set, combinations(numbers, r=start_length)))
         starts.sort(key=prod)
         for start in starts:
             numbers.difference_update(start)
@@ -36,14 +33,10 @@ def build_sequences(target, previous, remaining, groups_remaining):
             new_remaining = remaining - {num}
             # This group has the correct sum
             if new_sum == target:
-                if base_case:
-                    if not new_remaining:
-                        return True
-                    continue
+                if base_case and not new_remaining:
+                    return True
                 else:
                     # All exhausted, but not not yet in final group
-                    if not new_remaining:
-                        continue
                     # Recursive case: keep building
                     out = build_sequences(
                         target,
@@ -53,7 +46,7 @@ def build_sequences(target, previous, remaining, groups_remaining):
                     )
 
             # Less than case: add single number to group
-            else:  
+            else:
                 out = build_sequences(
                     target,
                     previous=previous | {num},
@@ -70,7 +63,6 @@ def build_sequences(target, previous, remaining, groups_remaining):
 def equal_sum_parts(numbers, target):
     partition = set()
     s = 0
-    overshoots = {}
 
     while s != target:
         difference = target - s
@@ -85,8 +77,6 @@ def equal_sum_parts(numbers, target):
 
 def get_arrangements(numbers, initial, n_groups):
     overall = sum(numbers)
-    # starts = [set(x) for x in combinations(numbers, r = initial)]
-    # starts.sort(key = prod)
     best_prod = inf
     multiplier = n_groups + 1
 
@@ -103,7 +93,8 @@ def get_arrangements(numbers, initial, n_groups):
             best_prod = min(best_prod, prod(start))
     return best_prod
 
-def solve(n_groups): 
+
+def solve(n_groups):
     i = 1
     this_result = inf
     while this_result == inf:
@@ -112,20 +103,17 @@ def solve(n_groups):
     return this_result
 
 
-##
-##
 with open("inputs/day24.txt") as f:
     raw_input = f.read().splitlines()
 
 numbers = {int(x) for x in raw_input}
 
 
-
-part1 = solve(n_groups = 2)
+part1 = solve(n_groups=2)
 print(part1)
 
 
-part2 = solve(n_groups= 3)
+part2 = solve(n_groups=3)
 print(part2)
 
 ##)

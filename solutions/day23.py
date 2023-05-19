@@ -1,6 +1,6 @@
 import re
 
-registers = {"a": 0.0, "b": 0.0}
+registers = {"a": 0, "b": 0}
 
 
 def is_even(x):
@@ -13,7 +13,7 @@ def inc(register, line):
 
 
 def hlf(register, line):
-    registers[register] /= 2
+    registers[register] //= 2
     return line + 1
 
 
