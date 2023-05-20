@@ -25,12 +25,12 @@ part1 <- max(parsed[["distance"]])
 print(part1)
 
 parsed <- within(parsed, {
-    score <- 0
+    score <- distance <- 0
     state <- 1
     time_remaining <- flight_time
-    distance <- 0
 })
 score <- rep(0, nrow(parsed))
+
 for (i in seq_len(total_time)) {
     parsed[["time_remaining"]] <- parsed[["time_remaining"]] - 1
     # Add distance for flying reindeer

@@ -1,19 +1,23 @@
 import re
 
-# Create dict of numbers set to 0
-# Parse each line: \4 = \2 (\1, \3), subbing in bitwise symbols
-# eval each line
-
-with open("inputs/day7.txt") as f:
-    raw_input = f.read().splitlines()
-
-
-operators = {"NOT": "~", "OR": "|", "AND": "&", "LSHIFT": "<<", "RSHIFT": ">>"}
-
-registers = set()
+# An absolutely filthy hack here to make prematurely writing to a wire trigger a ValueError:
+# prepending a dummy ~~ in lines with no binary op
+def run_circuit(override_value=None):
+    done = [False] * len(code)
+    while not all(done):
+        for i, line in enumerate(code):
+            try:
+                if not done[i]:
+                    exec(line)
+                    done[i] = True
+                    if override_value:
+                        registers["b"] = override_value
+            except TypeError:
+                pass
 
 
 def dict_reference(key, di):
+
     out = key if re.match(r"\d+", key) else f"{di}['{key}']"
     return out
 
@@ -28,24 +32,21 @@ def parse_line(line):
     return line
 
 
-code = [ parse_line(line) for line in raw_input]
+# Create dict of numbers set to 0
+# Parse each line: \4 = \2 (\1, \3), subbing in bitwise symbols
+# eval each line
+
+with open("inputs/day7.txt") as f:
+    raw_input = f.read().splitlines()
+
+
+operators = {"NOT": "~", "OR": "|", "AND": "&", "LSHIFT": "<<", "RSHIFT": ">>"}
+
+registers = set()
+
+
+code = list(map(parse_line, raw_input))
 registers = {k: None for k in registers}
-
-# An absolutely filthy hack here to make prematurely writing to a wire trigger a ValueError:
-# prepending a dummy ~~ in lines with no binary op
-
-def run_circuit(override_value = None):
-    done = [False] * len(code)
-    while not all(done):
-        for i, line in enumerate(code):
-            try:
-                if not done[i]:
-                    exec(line)
-                    done[i] = True
-                    if override_value: 
-                        registers["b"] = override_value
-            except TypeError:
-                pass
 
 
 run_circuit()

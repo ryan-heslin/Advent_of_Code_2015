@@ -1,6 +1,9 @@
 # Wrapper to recursively find permutations for each starting number in range
 find_permutations <- function(target = 100, n = 4) {
-    lapply(seq(from = 0, to = target, by = 1), find_permutations_rec, target = target, n = n) |>
+    lapply(seq(from = 0, to = target, by = 1),
+        find_permutations_rec,
+        target = target, n = n
+    ) |>
         do.call(what = rbind)
 }
 
@@ -27,9 +30,7 @@ find_permutations_rec <- function(numbers, n = 4, target = 100) {
 
 # Treat any negative property as 0
 multiply <- function(x) {
-    if (min(x) <= 0) {
-        return(0)
-    }
+    x[x < 0] <- 0
     prod(x)
 }
 

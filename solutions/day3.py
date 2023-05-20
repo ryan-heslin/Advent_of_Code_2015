@@ -1,16 +1,15 @@
 from itertools import cycle
-with open('inputs/day3.txt') as f:
+
+with open("inputs/day3.txt") as f:
     directions = f.readline().rstrip("\n")
 
-replacements = {"^" : "0+j", "v" : "0-j", ">" : "+01", "<" : "-01" }
+replacements = {"^": 1j, "v": -1j, ">": 1, "<": -1}
 
-for k, v in replacements.items():
-    directions = directions.replace(k, v)
+directions = [replacements[char] for char in directions]
 
-directions =  [ complex(directions[i:(i+3)]) for i in range(0, len(directions), 3)]
 
-visited = {complex("0")}
-current = complex("0")
+current = 0
+visited = {current}
 for coord in directions:
     current += coord
     visited.add(current)
@@ -18,12 +17,11 @@ for coord in directions:
 part1 = len(visited)
 print(f"Part 1: {part1}")
 
-
-visited = {complex("0")}
-deliverers =  [ complex("0") ] * 2
 i = 0
+visited = {i}
+deliverers = [i, i]
 
-for turn in cycle([0, 1]):
+for turn in cycle((0, 1)):
     coord = directions[i]
     deliverers[turn] += coord
     visited.add(deliverers[turn])

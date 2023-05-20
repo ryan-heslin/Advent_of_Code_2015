@@ -3,13 +3,23 @@ from itertools import permutations
 
 import numpy as np
 
-signs = {"lose": -1, "gain": 1}
 
-with open("inputs/day13.txt") as f:
-    raw_input = f.read().splitlines()
-
-output_row = 0
-values = []
+def solve(permutations, V):
+    sequence = range(V - 1)
+    best = -np.inf
+    for perm in permutations:
+        total = 0
+        for i in sequence:
+            next = i + 1
+            # Add edge in both directions
+            total += G[perm[i]][perm[next]] + G[perm[next]][perm[i]]
+        # Connect last vertext to first in both directions
+        # loop unrolling is sometimes defensible
+        total += G[perm[-1]][perm[0]] + G[perm[0]][perm[-1]]
+        if total > best:
+            best = total
+            yield int(best), perm
+    # return int(best)
 
 
 class Allequal:
@@ -22,6 +32,13 @@ class Allequal:
 last = Allequal()
 i = 0
 
+signs = {"lose": -1, "gain": 1}
+
+with open("inputs/day13.txt") as f:
+    raw_input = f.read().splitlines()
+
+output_row = 0
+values = []
 # Get number of people programatically
 while (new := raw_input[i].split(" ")[0]) == last:
     last = new
@@ -65,25 +82,6 @@ G = np.array(values)
 perms = permutations(range(V))
 
 
-
-def solve(permutations, V):
-    sequence = range(V - 1)
-    best = -np.inf
-    for perm in permutations:
-        total = 0
-        for i in sequence:
-            next = i + 1
-            # Add edge in both directions
-            total += G[perm[i]][perm[next]] + G[perm[next]][perm[i]]
-        # Connect last vertext to first in both directions
-        # loop unrolling is sometimes defensible
-        total += G[perm[-1]][perm[0]] + G[perm[0]][perm[-1]]
-        if total > best:
-            best = total
-            yield int(best), perm
-    # return int(best)
-
-
 gen = solve(perms, V)
 part1 = best_perm = None
 while True:
@@ -107,6 +105,3 @@ for i in range(V):
 # Compute happiness from inserting zero-weight vertex on it
 part2 = int(part1 - lowest)
 print(part2)
-
-
-

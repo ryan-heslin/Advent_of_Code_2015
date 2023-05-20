@@ -1,5 +1,5 @@
 ASCII_A = ord("a")
-disallowed = {8, 11, 14}
+DISALLOWED = {8, 11, 14}
 
 
 def validate(password):
@@ -17,22 +17,18 @@ def validate(password):
     return triple and doubles >= 2
 
 
-def increment(password, disallowed=disallowed):
+def increment(password):
     max_value = 26
     i = len(password) - 1
 
     for i in reversed(range(len(password))):
-        password[i] = (password[i] + 1 + (password[i] in disallowed)) % max_value
+        password[i] = (password[i] + 1 + (password[i] in DISALLOWED)) % max_value
         if password[i] != 0:
             break
 
 
 def str2nums(string):
-    out = [None] * len(string)
-    for i, letter in enumerate(string):
-        out[i] = ord(letter) - ASCII_A
-
-    return out
+    return [ord(letter) - ASCII_A for letter in string]
 
 
 def solve(password):
@@ -43,10 +39,7 @@ def solve(password):
 
 
 def nums2str(nums):
-    out = ""
-    for num in nums:
-        out += chr(num + ASCII_A)
-    return out
+    return "".join(chr(num + ASCII_A) for num in nums)
 
 
 raw_input = "vzbxkghb"

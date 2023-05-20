@@ -8,7 +8,7 @@ numbers = [int(x.group(0)) for x in re.finditer(r"-?\d+", raw_input)]
 part1 = sum(numbers)
 print(part1)
 
-queue = parsed = json.loads(raw_input)
+queue = json.loads(raw_input)
 
 
 total = 0
