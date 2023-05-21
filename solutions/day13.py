@@ -1,107 +1,56 @@
-import re
+from collections import defaultdict
 from itertools import permutations
-
-import numpy as np
-
-
-def solve(permutations, V):
-    sequence = range(V - 1)
-    best = -np.inf
-    for perm in permutations:
-        total = 0
-        for i in sequence:
-            next = i + 1
-            # Add edge in both directions
-            total += G[perm[i]][perm[next]] + G[perm[next]][perm[i]]
-        # Connect last vertext to first in both directions
-        # loop unrolling is sometimes defensible
-        total += G[perm[-1]][perm[0]] + G[perm[0]][perm[-1]]
-        if total > best:
-            best = total
-            yield int(best), perm
-    # return int(best)
+from math import inf
 
 
-class Allequal:
-    """Equal to everything"""
+def parse(lines):
+    signs = {"gain": 1, "lose": -1}
+    result = defaultdict(lambda: 0)
+    names = set()
 
-    def __eq__(self, other) -> bool:
-        return True
+    for line in lines:
+        parts = line.split(" ")
+        left = parts[0]
+        right = parts[-1].rstrip(".")
+        value = int(parts[3]) * signs[parts[2]]
+        key = [left, right]
+        key.sort()
+        key = tuple(key)
+
+        names.update(key)
+        result[key] += value
+
+    return result, names
 
 
-last = Allequal()
-i = 0
+def optimize(mapping, names):
+    perms = permutations(names)
+    n = len(names)
+    best_happiness = -inf
+    best_order = None
 
-signs = {"lose": -1, "gain": 1}
+    for perm in perms:
+        this_happiness = 0
+        for i in range(n):
+            key = tuple(sorted((perm[i], perm[(i + 1) % n])))
+            this_happiness += mapping[key]
+        if this_happiness > best_happiness:
+            best_happiness = this_happiness
+            best_order = perm
+
+    return best_happiness, best_order
+
 
 with open("inputs/day13.txt") as f:
     raw_input = f.read().splitlines()
 
-output_row = 0
-values = []
-# Get number of people programatically
-while (new := raw_input[i].split(" ")[0]) == last:
-    last = new
-    i += 1
-
-# V := number of vertices
-V = i + 1
-
-values = []
-# groups of 7
-skip = -1
-
-# Parse input into matrix:
-# i, j := i's happiness next to j
-# j, i := j's happiness next to i
-# diagonal: -inf (invalid)
-for person_index in range(0, len(raw_input), V - 1):
-    new_vertex = [-np.inf] * V
-    skip += 1
-    past_skip = False
-    edge_index = 0
-    while edge_index < V:
-        # Skip value i for row i since diagonal is invalid
-        # 7 line in each group for a row of an 8-coumn matrix
-        if edge_index != skip:
-            matches = re.match(
-                r".*(?P<sign>(?:gain|lose))\s(?P<val>\d+).*",
-                raw_input[person_index + edge_index - past_skip],
-            )
-
-            new_vertex[edge_index] = signs[matches.group("sign")] * int(
-                matches.group("val")
-            )
-        else:
-            past_skip = True
-        edge_index += 1
-    values.append(new_vertex)
-
-G = np.array(values)
-
-perms = permutations(range(V))
-
-
-gen = solve(perms, V)
-part1 = best_perm = None
-while True:
-    try:
-        part1, best_perm = next(gen)
-    except StopIteration:
-        break
-
+mapping, names = parse(raw_input)
+part1, best_order = optimize(mapping, names)
+assert best_order
 print(part1)
-
-lowest = np.inf
-
-# Find which edge in best permutation has lowest happiness score
-for i in range(V):
-    next = (i + 1) % (V)
-    this_happiness = G[best_perm[i]][best_perm[next]] + G[best_perm[next]][best_perm[i]]
-    if this_happiness < lowest:
-        lowest = this_happiness
-        best_edge = (best_perm[i], best_perm[next])
-
-# Compute happiness from inserting zero-weight vertex on it
-part2 = int(part1 - lowest)
+n = len(names)
+lowest = min(
+    mapping[tuple(sorted((best_order[i], best_order[(i + 1) % n])))] for i in range(n)
+)
+part2 = part1 - lowest
 print(part2)
