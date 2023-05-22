@@ -3,7 +3,7 @@ import re
 with open("inputs/day25.txt") as f:
     raw_input = f.read()
 
-target_row, target_column = (int(x) for x in re.findall(r"\d+", raw_input))
+target_row, target_column = map(int, re.findall(r"\d+", raw_input))
 
 number = 20151125
 row = column = diagonal_length = 1

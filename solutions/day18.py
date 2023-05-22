@@ -53,7 +53,6 @@ def simulate(status, neighbors, iterations=100, check_corners=False):
             neighbors_on = sum(status[neighbor] for neighbor in coord_neighbors)
 
             # on -> off
-
             # Keep corners on always
             if status[coord] and not in_range(neighbors_on, 2, 3):
                 if not (check_corners and (coord in corners)):
