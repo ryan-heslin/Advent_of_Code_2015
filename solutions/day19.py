@@ -1,25 +1,32 @@
 import re
 from collections import defaultdict
-from math import inf
+from queue import PriorityQueue
 
-SPLIT_PATTERN = re.compile(r"(?<=[a-zA-Z])(?=[A-Z])")
+def search(molecule, pairs, terminals):
+
+    queue = PriorityQueue()
+    queue.put((len(molecule),0,  molecule), block=False)
+    current = ""
+    visited = set()
+
+    while True:
+        _, steps, current = queue.get(block = False)
+        if current in terminals:
+            return steps + 1
+
+        full = current
+        # Greed is good!
+        extra_steps = steps
+        for output, input in pairs:
+            if output in full:
+                candidate = re.sub(output, input, full, count = 1)
+                if candidate not in visited:
+                    full = candidate
+                    visited.add(full)
+                    extra_steps += 1
+                    queue.put((len(full), extra_steps , full ))
 
 
-def split_molecule(molecule):
-    # Capital or lowercase followed by capital
-    return re.split(
-        SPLIT_PATTERN,
-        molecule,
-    )
-
-def shortest(molecule, pairs, terminals):
-    steps = 0
-    while molecule not in terminals:
-        for product, source in pairs:
-            if product in molecule:
-                steps += 1
-                molecule = re.sub(product, source, molecule, count = 1)
-    return steps + 1
 
 with open("inputs/day19.txt") as f:
     raw_input = f.read()
@@ -53,8 +60,6 @@ for i in range(len(molecule)):
 part1 = len(found)
 print(part1)
 
-# Replacement : origin map
-
 terminals = set()
 for k, v in inverted_map.items():
     if v == "e": 
@@ -64,7 +69,5 @@ for k in terminals:
     inverted_map.pop(k)
 
 substitutions = sorted(inverted_map.items(), key=lambda x: len(x[0]), reverse=True)
-# part2 = min(count_steps(inverted_map, molecule, set(), 0))
-part2 = shortest(molecule, substitutions, 
-           terminals )
+part2 = search(molecule, substitutions,            terminals )
 print(part2)
