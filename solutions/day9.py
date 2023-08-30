@@ -3,7 +3,6 @@ from collections import defaultdict
 from itertools import permutations
 from math import inf
 from operator import ge
-from operator import le
 
 
 def solve(perms, comparator, start, failure, stop):
@@ -60,6 +59,6 @@ perms = permutations(positions.keys(), len(positions.keys()))
 
 part1 = solve(perms, min, inf, inf, ge)
 perms = permutations(positions.keys(), len(positions.keys()))
-part2 = solve(perms, max, -inf, -inf, lambda: False)
+part2 = solve(perms, max, -inf, -inf, lambda *_: False)
 print(part1)
 print(part2)

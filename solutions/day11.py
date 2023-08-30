@@ -43,7 +43,7 @@ def nums2str(nums):
 
 
 raw_input = "vzbxkghb"
-
+raw_input = "hepxcrrq"
 parsed = str2nums(raw_input)
 
 part1 = nums2str(next(solve(parsed)))

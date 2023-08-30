@@ -23,7 +23,7 @@ def sum_divisors(target, max_divisor=math.inf):
 
 
 number = 34000000
-part1_target = 34000000 // 10
+part1_target = number // 10
 part1 = sum_divisors(part1_target)
 print(part1)
 

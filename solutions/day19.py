@@ -12,26 +12,14 @@ def split_molecule(molecule):
         molecule,
     )
 
-
-def count_steps(mapping, molecule, values, steps=0):
-    # Base case: electron found
-    if molecule == "e":
-        return steps
-    for replacement, origin in mapping.items():
-        # If molecule starts with replacement molecule, go back a step by substituting replacement origin
-        matched = list(re.finditer(patterns[replacement], molecule))
-        if matched:
-            span = matched[0].span()
-            new_molecule = molecule[: (span)[0]] + origin + molecule[(span[1]) :]
-            values.add(count_steps(mapping, new_molecule, values, steps + 1))
-            result = values if steps == 0 else inf
-            return result
-        # for matched in matches:
-        #    span = matched.span()
-        #    new_molecule = molecule[:(span)[0]] + origin + molecule[(span[1]):]
-        # Add total steps to record of those values
-        #    values.add(count_steps(mapping, new_molecule, values, steps + 1))
-
+def shortest(molecule, pairs, terminals):
+    steps = 0
+    while molecule not in terminals:
+        for product, source in pairs:
+            if product in molecule:
+                steps += 1
+                molecule = re.sub(product, source, molecule, count = 1)
+    return steps + 1
 
 with open("inputs/day19.txt") as f:
     raw_input = f.read()
@@ -67,5 +55,16 @@ print(part1)
 
 # Replacement : origin map
 
-part2 = min(count_steps(inverted_map, molecule, set(), 0))
+terminals = set()
+for k, v in inverted_map.items():
+    if v == "e": 
+        terminals.add(k)
+
+for k in terminals: 
+    inverted_map.pop(k)
+
+substitutions = sorted(inverted_map.items(), key=lambda x: len(x[0]), reverse=True)
+# part2 = min(count_steps(inverted_map, molecule, set(), 0))
+part2 = shortest(molecule, substitutions, 
+           terminals )
 print(part2)

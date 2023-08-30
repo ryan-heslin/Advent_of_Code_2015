@@ -106,7 +106,7 @@ def solve(n_groups):
 with open("inputs/day24.txt") as f:
     raw_input = f.read().splitlines()
 
-numbers = {int(x) for x in raw_input}
+numbers = set(map(int, raw_input))
 
 
 part1 = solve(n_groups=2)
