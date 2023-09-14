@@ -80,14 +80,16 @@ start_lengths, start_values = parse_sequence(int2list(raw_input))
 
 start = RLE(start_lengths, start_values)
 
+part1_i = 40
+part2_i = 10
 current = start
-for __ in range(40):
+for __ in range(part1_i):
     current = RLE(*current.step())
 
 part1 = current.total_length()
 print(part1)
 
-for __ in range(10):
+for __ in range(part2_i):
     current = RLE(*current.step())
 part2 = current.total_length()
 print(part2)
